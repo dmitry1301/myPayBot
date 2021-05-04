@@ -12,7 +12,6 @@ import keyboards
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-import states
 from states import NewItem, Mailing, NewReview, Find, Support, Purchase, NewVacancy, EditItem, EditVacancy
 from database.database import Item, User, Reviews, Vacancy
 
@@ -21,7 +20,7 @@ from loader import dp, bot
 
 
 db = DBCommands()
-#900230063 or 735318801 = [900230063, 735318801]
+#900230063 or 735318801
 pay_token = '390540012:LIVE:15874'
 
 remove_item = CallbackData("remove", "item_id")
@@ -46,8 +45,7 @@ async def register_user(message: types.Message):
     text = ("""
     Добро пожаловать в чат по поиску специалистов и вакансий в сфере инфобизнеса! Моя задача - помогать вам на всех этапах поиска!
 Я умею создавать, редактировать резюме и вакансии, показывать контакты работодателей.
-Поиск специалиста по никнейму /find.
-    \nСправка по использованию бота и обратная связь /help.
+\nСправка по использованию бота и обратная связь /help.
     """)
     if message.from_user.id == 900230063 or 735318801:
         text += ("\n<b>Админка</b>\n"
@@ -68,12 +66,6 @@ async def message_text_handler(message: types.Message):
                 text = ("<b>Сфера деятельности: </b>\t{name}\n"
                         "<b>Описание: </b>{desc}\n"
                         "<b>Instagram: </b>https://instagram.com/{contact}")
-                    #markup = InlineKeyboardMarkup()
-
-                    #sendBtn = InlineKeyboardButton("Редактировать", callback_data=edit_item.new(item_id=item.id))
-                    #markup.add(sendBtn)
-                    #reviewBtn = InlineKeyboardButton("Удалить резюме", callback_data=remove_item.new(item_id=item.id))
-                    #markup.add(reviewBtn)
                 markup = InlineKeyboardMarkup(
                     inline_keyboard=
                         [
@@ -103,12 +95,6 @@ async def message_text_handler(message: types.Message):
                     text = ("<b>Требуется: </b>\t{name}\n"
                         "<b>Описание: </b>{desc}\n"
                         "<b>Instagram: </b>https://instagram.com/{contact}")
-                    #markup = InlineKeyboardMarkup()
-
-                    #sendBtn = InlineKeyboardButton("Редактировать", callback_data=edit_item.new(item_id=item.id))
-                    #markup.add(sendBtn)
-                    #reviewBtn = InlineKeyboardButton("Удалить резюме", callback_data=remove_item.new(item_id=item.id))
-                    #markup.add(reviewBtn)
                     markup = InlineKeyboardMarkup(
                         inline_keyboard=
                         [
@@ -129,8 +115,6 @@ async def message_text_handler(message: types.Message):
                         contact=vacan.contactInst), reply_markup=markup)
                     await asyncio.sleep(0.3)
 
-
-#<a href="https://www.fkwallet.ru"><img src="https://www.fkwallet.ru/assets/2017/images/btns/iconsmall_wallet9.png" title="Прием криптовалют"></a>
 
 
 @dp.callback_query_handler(edit_vacan.filter())
@@ -207,19 +191,11 @@ async def enter_contactIn(message: types.Message, state: FSMContext):
         pass
     else:
         vacan.username = message.from_user.username
-    #item.review_id = item.id
-    #await item.create()
-    #await item.update(id=item.id).apply()
     await vacan.update(name=vacan.name,
                       desc=vacan.desc,
                       contactInst=vacan.contactInst,
                       username=vacan.username,
                       payment=True).apply()
-    #await item.update(desc=item.desc).apply()
-    #await item.update(contactInst=item.contactInst).apply()
-    #await item.update(username=item.username).apply()
-    #await item.update(review_id=item.id).apply()
-    #await item.update(payment=True).apply()
     await state.reset_state()
     await message.answer("<i>Ваша вакансия отредактирована.</i>", reply_markup=keyboards.menuKb)
 
@@ -265,27 +241,18 @@ async def enter_contact(message: types.Message, state: FSMContext):
         pass
     else:
         item.username = message.from_user.username
-    #item.review_id = item.id
-    #await item.create()
-    #await item.update(id=item.id).apply()
     await item.update(name=item.name,
                       desc=item.desc,
                       contactInst=item.contactInst,
                       username=item.username,
                       review_id=item.id,
                       payment=True).apply()
-    #await item.update(desc=item.desc).apply()
-    #await item.update(contactInst=item.contactInst).apply()
-    #await item.update(username=item.username).apply()
-    #await item.update(review_id=item.id).apply()
-    #await item.update(payment=True).apply()
     await state.reset_state()
     await message.answer("<i>Ваше резюме отредактировано.</i>", reply_markup=keyboards.menuKb)
 
 @dp.message_handler(commands=['help'])
 async def help_message(message: types.Message):
-    text = "Для поиска резюме по никнейму воспользуйтесь командой /find." \
-           "\nЧтобы написать обращение администратору нажмите /support."
+    text = "Чтобы написать обращение администратору нажмите /support."
     await message.answer(text, reply_markup=keyboards.menuKb)
 
 @dp.message_handler(commands=['support'])
